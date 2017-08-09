@@ -1,5 +1,5 @@
 # R_tutorials
-A collection of guides to analyze and visualize data in R for teaching purposes. 
+A collection of guides + data to analyze and visualize data in R. This was created by M. Van Nuland for teaching purposes. 
 
 Contents:
 - Basics
