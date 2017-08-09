@@ -1,0 +1,223 @@
+---
+title: "R and RStudio tutorial (Plant Ecology, SP2017)"
+output:
+  pdf_document: default
+  html_document: default
+---
+#####Created by: Michael Van Nuland (Jan. 2017)
+This is a tutorial for doing basic data manipulation, statistical analysis, and graphing in R using RStudio. R is a powerful and widely used software for data science. RStudio is a Graphical User Interface (GUI) that works with R to easily organize your workspace, keep track of your code, and structure your projects. This tutorial is designed to practice creating objects, using functions, and designing common statistical models (t-test, ANOVA, Regression, ANCOVA). You can download R here: https://www.r-project.org/ and download RStudio here: https://www.rstudio.com/.  
+<br>
+    
+Further information and manuals can be found many places online, including:  
+http://cran.r-project.org/manuals.html    
+http://www.statmethods.net/  
+<br>
+    
+(However, when I have a problem or my code doesn't work, I usually type "brief description of the problem in R" into google. 99% of the time that takes me to a stackoverflow.com forum where someone has had the same or similar problem with a description of a solution.)
+    
+### Some basics of the R language
+There are 3 main parts of the R language that we will use most in the course. The first are called **objects**. Objects are assigned information. 
+```{r}
+x <- 2 + 2    # Here, we create an object called "x", which we assign the equation 2 + 2. The object stores the result of the equation.
+              
+# Notice can add comments to your code with the "#" symbol. These are not run with the code, but are very useful to explain/keep track of things (especially for yourself!).
+```  
+<br>
+    
+Another major part of the language are  **functions**. Functions are like enzymes, they *do* things - but you need to give them the right things to work with. Sometimes they require you to state specifically what you want them to do with **arguments**. 
+```{r}
+num.list <- c(4.3, 9.5, 2.1, -8.8, 3.0, 2.6, -4.7)  # the c function (short for "concatenate") creates an object with continuous data (called a "numeric vector")
+
+char.list <- c("red", "blue", "yellow") # you can also create vectors of categorical data (called "characters vectors")
+
+mean.num.list <- mean(x = num.list)   # the mean function needs an argument (x = ...) to tell it which object to calculate the mean of. 
+
+sd.num.list <- sd(x = num.list)   # calculates the standard deviation of the object num.list
+```  
+<br>
+    
+R comes pre-loaded with a decent amount of baseline functions for data science, but people (including the R team) are constantly updating and developing new functions to do bigger/better things (i.e., make it easier to write code and improve your data science skills). Any functions that are not automatically included in R can be found in packages. You install packages under the Tools menu, and then call them in your R environment to load them. More info on packages here:   http://www.statmethods.net/interface/packages.html  
+http://cran.r-project.org/web/packages/available_packages_by_name.html
+```{r warning=FALSE}
+# Practice installing the package ggplot2 through the Tools menu
+
+library(ggplot2)  # After installing, you must load the package to use it.
+```  
+<br>
+    
+Other things we won't cover but I encourage you to explore/play with on your own time:  
+- when/where/how/what to ask R for help  
+- tab-complete features  
+- stats packages and the ggplot2 graphing package
+<br>
+    
+###T-tests
+T-tests compare whether two groups are different (jargon version: *used to test the null hypothesis that the mean value of a single variable does not differ between two groups*). They are the simplest statistical test we'll be using. Some more useful info on t-tests can be found here: http://www.statmethods.net/stats/ttest.html
+```{r}
+# We'll first input some imaginary height (cm) data into two objects, plant1 and plant2.
+
+plant1 <- c(3.6, 4.2, 3.9, 4.0)
+plant2 <- c(1.1, 2.3, 1.2, 0.9)
+
+# Now run a t-test to compare these groups and inspect the model results
+
+plant.model <- t.test(plant1, plant2)   # The t.test function and the two objects (numeric vectors) that represent our two plant groups is all we need here.
+
+plant.model   # Run this by itself for the model summary. Note the statistics worth reporting (any important stats not given in the model summary you can think of?) 
+```
+<br>
+    
+Now we want to visualize the difference between the two groups. You can do this a number of ways, such as with density plots or, more familiar, barplots. However, boxplots are the easiest and simplest to make (see here for discussion on pros/cons of the different graph types: http://www.nature.com/nmeth/journal/v11/n2/full/nmeth.2807.html).
+```{r}
+# First, we need to combine the height data from our two plant groups in one object - a dataframe. We do this because most plotting functions expect your data to be in a dataframe.
+
+height <- c(plant1, plant2)   # combine the height data into a single numeric vector
+
+plant.df <- data.frame(plant.group = c(rep("plant1", times = length(plant1)), 
+                        rep("plant2", times = length(plant2))), 
+                        height = c(plant1, plant2))
+
+# The plant.df object is a dataframe with one column for plant groups (categorical), and another column with the height data (continuous). 
+
+# NOTE: you can also run the t.test function with your data set up this way (probably how you would collect/read the file into R anyways):
+
+plant.model2 <- t.test(height ~ plant.group, data = plant.df)
+
+# We visualize the height difference between plant groups like this:
+
+boxplot(height ~ plant.group, data = plant.df, main="Plant height by group", xlab="Plant group", ylab="Height (cm)")
+```
+<br>
+    
+###ANOVA
+ANOVAs are used to compare the means of more than two samples of treatment groups. The null hypothesis is that the means of the treatment groups are all the same.    
+```{r}
+# Let's work with a portion of a real dataset now and pratice a few more important R skills.
+
+# We can import a datafile into the R environment with the read.csv function (note: this requires that the file is in the .csv format and in your current working directory)
+
+pop.temperatures <- read.csv(file = "Population_temps.csv", header = TRUE) # This is a dataset on the Mean Annual Temperature (MAT) for 3 populations of cottonwood trees in the Rocky Mountains.
+
+head(pop.temperatures)    # you can inspect what the first few lines of the object looks like 
+tail(pop.temperatures)    # or the last few lines
+```
+<br>
+    
+The lm function creates a linear model (y ~ x), and requires an argument to tell it where to find MAT (continuous variable) and Population (categorical factor). The anova function performs an ANOVA on the linear model object (MAT predicted by Population, or, "MAT ~ Population") and reports the ANOVA table.
+```{r}
+model <- lm(MAT ~ Population, data = pop.temperatures)
+
+anova(model)    # This provides the summary information (ANOVA table) for the one-way ANOVA. It shows the results for the test of the null hypothesis that populations do not differ in MAT. Similar to t-tests, note the important statistics worth reporting.
+```
+    
+What if we want to know which groups are different from each other? We can run a post-hoc analysis. There are many different post-hoc tests to chose from; here we use Tukey's Honest Significant Difference test.
+```{r}
+TukeyHSD(aov(MAT ~ Population, data = pop.temperatures))
+```
+<br>
+    
+We can plot the results of the one-way ANOVA to visualize any differences with:
+```{r}
+boxplot(MAT ~ Population, data = pop.temperatures, main="Populations differ in MAT", xlab="Population", ylab="Mean Annual Temperature (°C)")
+```
+<br>
+    
+There is another factor in the dataset: Year. This factor groups the data between relative recent temperature values in 2000 and the predicted future temperature in 2050. We can run a two-way, factorial ANOVA to test whether populations differ in 2000 MAT, 2050 MAT, and whether populations differ in their predicted MAT change between 2000-2050. 
+```{r}
+model2 <- lm(MAT ~ Population*as.factor(Year), data = pop.temperatures) # to creates the factorial linear model, all we do is add the "*" symbol and it runs with all combinations of factors (population, year, and the interaction of population X year). Why did we have to add the additional function "as.factor"" to describe Year? 
+
+anova(model2)     # The ANOVA table now contains info for the factorial two-way model. Run the code above with "MAT ~ Population + as.factor(Year)". What is the difference?
+
+
+# And again we can ask which groups are different from one another with a post-hoc test
+
+TukeyHSD(aov(MAT ~ Population*as.factor(Year), data = pop.temperatures))
+```
+<br>
+    
+Now that we have results from the two-way ANOVA that includes the interaction term - what's the best way to show the results? You might be tempted to make two separate boxplots, one for 2000 MAT and one for 2050 MAT. This would accurately show the main effect results (Population and Year), but it would be harder to decipher any interaction effect. Plotting it all in the same graph is the clearest way to display results of the factors in the model, *especially* the interaction effect. 
+```{r}
+boxplot(MAT ~ Population*as.factor(Year), data = pop.temperatures,     
+      col=(c("white","orange")),
+      main="Warming Across Populations", xlab="Population and Year", ylab="Mean Annual Temperature (°C)")
+```
+<br>
+    
+###Regressions
+Regressions are used when you want to analyze the relationship between continuous variables. Typically, a regression describes the linear relationship between a variable on the x-axis (predictor) and a variable on the y-axis (response). Keep in mind, correlation does not equal caustion, and just because you put a variable on the x-axis does not necessarily mean it *causes* the change in the y-axis variable. A great resource for further regression modeling: http://www.statmethods.net/stats/rdiagnostics.html
+```{r}
+# Here's a quick example using the same dataset on populations and temperature.
+
+Current.MAT <- pop.temperatures[1:15, 1:3]    # You can subset the first 15 rows and 3 columns with indexing in R (based on how our dataframe is oriented, this subsets only the 2000 MAT data)
+Future.MAT <- pop.temperatures[16:30, 1:3]    # Here we're subsetting the 2050 MAT data
+
+
+# Let's make 2 new objects with just the information we want from the respective subset dataframes
+
+current.temp <- Current.MAT$MAT   # The "$" symbol is used to call a specific column in a dataframe
+future.temp <- Future.MAT$MAT
+
+
+# Now we can create a linear model and view the summary results. 
+
+reg.model <- lm(future.temp ~ current.temp)    # What is the null hypothesis being tested here?
+summary(reg.model)      # What stats are worth noting? Is this different than "anova(reg.model)"?
+```
+<br>
+    
+Relationships between two variables are best visualized with scatterplots. **Practice**: What is the "take-home message"" from this graph?
+```{r}
+plot(x = current.temp, y = future.temp, 
+     main="Relationship between 2000 and 2050 MAT", 
+     xlab="MAT in 2000 ", ylab="Predicted MAT in 2050 ", 
+     pch=19, col = "red")                                 # changing the type and color of points
+abline(lm(future.temp ~ current.temp), col="darkgrey", lwd=5)      # Add the regression line (y~x)
+```
+<br>
+    
+###ANCOVA
+ANCOVA combines features of ANOVA and regression by adding covariates to the ANOVA models. In short, ANCOVAs test the main and interaction effects of factors, with the added bonus of controlling for the effect of covariates. A more in-depth example and tutorial can be found here: http://r-eco-evo.blogspot.com/2011/08/comparing-two-regression-slopes-by.html
+```{r}
+# We'll add one more column of data to the current.temp object for our last example. Let's imagine we measured the diameter (cm) of cottonwood trees in the populations we've been working with.
+
+Diameter <- c(34.6, 20, 57.2, 24.2, 42.1, 17.8, 20.9, 18.5, 35.5, 29.7, 50.3, 45, 36.6, 35.8, 41.1)
+
+Current.MAT.Diameter <- cbind(Current.MAT, Diameter)   # the cbind function adds the Diameter object as a column to the Current.MAT dataframe. We now have an object with Population, Year, MAT, and DBH all together.
+
+head(Current.MAT.Diameter)
+```
+<br>
+    
+Now we can construct an ANCOVA model that tests the following null hypothesis: the relationship between MAT and DBH does not vary among populations.
+```{r}
+ancova.model = lm(Diameter ~ MAT*Population, data = Current.MAT.Diameter)   # here you can see the regression component of ANCOVAs 
+
+anova(ancova.model)     # and here is the ANOVA component
+```
+<br>
+    
+Again, we might be most interested in the interaction component of the model (MAT x Population effect). The best way is to show that in this case is with a scatteplot that groups regression lines by population.
+```{r}
+# Separate the data by population first (this allows us to show the points/lines for each group as different colors)
+
+OC.data <- Current.MAT.Diameter[1:5, 1:4]   
+SJ.data <- Current.MAT.Diameter[6:10, 1:4] 
+SNR.data <- Current.MAT.Diameter[11:15, 1:4] 
+
+
+# Run all these lines together to make the combined plot.
+
+# Note: change the pch, col, cex, and lwd to see how you can customize the points and lines. There are also easy ways to customize the axis text and box that frames the plot.
+
+plot(Diameter ~ MAT, data = OC.data, main="Diameter predicted by MAT across populations", xlab="Current MAT (C)", ylab="Tree Diameter (cm)", xlim=c(0,10), ylim=c(10,60), pch=19, col = "red", cex=1.5) 
+
+points(x = SJ.data$MAT, y = SJ.data$Diameter, pch=19, col="orange", cex=1.5)
+points(x = SNR.data$MAT, y = SNR.data$Diameter, pch=19, col="yellow2", cex=1.5)
+
+abline(lm(Diameter ~ MAT, data = OC.data), col="red", lwd=3) 
+abline(lm(Diameter ~ MAT, data = SJ.data), col="orange", lwd=3) 
+abline(lm(Diameter ~ MAT, data = SNR.data), col="yellow2", lwd=3) 
+```
+<br>
+    
+You now have a bank of code to help guide your analyses and graphing that will be expected of you for your projects in Plant Ecology. Like I mentioned, this tutorial is not designed to discuss all components/assumptions/problems of the statistical tests presented, and it barely skims the surface of what you can do with R. Just like learning another spoken language, the best way to develop your data science skills is to practice.
