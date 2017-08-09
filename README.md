@@ -1,10 +1,10 @@
 # R_tutorials
-A collection of guides + data to analyze and visualize data in R. This was created by M. Van Nuland for teaching purposes. 
+A collection of guides + data to analyze and visualize data in R. This was created by M. Van Nuland for teaching purposes as part of Plant Ecology greenhouse projects in Spring 2017
 
 Contents:
-- Basics
+- Basics (Analyses and figures)
 - Homework
 - In-class Exercise
-- Project 1 tutorial
-- Project 2 tutorial
+- Project 1 tutorial (Eucalyptus spp. responses to factorial nitrogen and H2O treatments)
+- Project 2 tutorial (Solidago spp. responses to diversiy, mycorrhizae,and H2O treatments)
 - Regression tutorial
