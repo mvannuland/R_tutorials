@@ -1,0 +1,25 @@
+Species,H2O_adapted,H2O_treatment,Div_treatment,LeafNumber_t0,Height_t0,LeafNumber_t35,Height_t35,Focal_Aboveground_biomass,Focal_Belowground_biomass,Ecosystem_function
+S. bicolor,Xeric,Dry,Mix,4,7.2,6,7.3,433.03,207.94,597.0883531
+S. bicolor,Xeric,Dry,Mix,4,4.7,6,9.1,347.5,301.43,588.5175982
+S. bicolor,Xeric,Dry,Mix,4,4.7,6,8.4,297.22,285.12,533.6574664
+S. bicolor,Xeric,Dry,Mono,4,7.5,8,9.4,423.07,329.42,364.2466337
+S. bicolor,Xeric,Dry,Mono,4,7.9,8,9.7,467.12,302.75,415.7177673
+S. bicolor,Xeric,Dry,Mono,4,5.5,8,8.5,368.66,285.49,370.2059044
+S. bicolor,Xeric,Wet,Mix,4,5.3,8,7.2,181.57,265.01,590.9810197
+S. bicolor,Xeric,Wet,Mix,4,7.5,8,7.7,291.1,218.42,580.3397671
+S. bicolor,Xeric,Wet,Mix,4,5.7,8,8.8,215.26,211.51,493.9396251
+S. bicolor,Xeric,Wet,Mono,4,4.8,8,8.5,155.79,218.51,357.9060873
+S. bicolor,Xeric,Wet,Mono,4,6.8,8,9,248.25,325.03,370.2059044
+S. bicolor,Xeric,Wet,Mono,4,4.5,8,9.9,146.11,259.88,364.2466337
+S. ridellii,Mesic,Dry,Mix,2,6.6,4,6.7,153.05,196.91,551.413052
+S. ridellii,Mesic,Dry,Mix,2,10.6,4,9.4,193.37,133.72,588.5175982
+S. ridellii,Mesic,Dry,Mix,2,9.1,4,8.2,184.61,88.97,533.6574664
+S. ridellii,Mesic,Dry,Mono,2,7.2,6,8.7,186.3,95.78,434.6382196
+S. ridellii,Mesic,Dry,Mono,2,7.5,6,6.4,228.57,183.19,370.2059044
+S. ridellii,Mesic,Dry,Mono,2,9.5,6,9.7,228.37,124.13,437.2731363
+S. ridellii,Mesic,Wet,Mix,2,6.7,6,8.1,354.41,145.65,549.7231605
+S. ridellii,Mesic,Wet,Mix,2,7.8,6,8.5,413.7,142.94,580.3397671
+S. ridellii,Mesic,Wet,Mix,2,8.1,6,6.8,323.7,109.09,493.9396251
+S. ridellii,Mesic,Wet,Mono,2,6.8,6,10.7,298.66,211.2,432.4781939
+S. ridellii,Mesic,Wet,Mono,2,8.6,6,7.1,385.23,172.94,364.2466337
+S. ridellii,Mesic,Wet,Mono,2,10.8,6,6.9,244.42,200.79,434.6382196
