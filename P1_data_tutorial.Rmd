@@ -1,0 +1,112 @@
+---
+title: "Example P1 analysis and figures"
+output: html_document
+---
+#####Created by: Michael Van Nuland (Feb. 2017)
+This is a step-by-step guide on how to handle the P1 data, conduct the statistical tests, and generate the figures. This guide uses a dataset that is identical to the one on Blackboard in every way - except for the actual data. That mean you can run this exact code with the real dataset, just make sure in STEP 2 that you load in the correct file (i.e., NOT the example file). Keep in mind your specific results and figures will look different than the output here. If you get stuck, have a look at the more detailed R tutorial posted on BB.
+<br>
+<br>
+<br>
+**STEP 1.** Download the "P1_data_example.csv" file from blackboard and **save it to your desktop**. (Do the same for the real file once I have all your data to upload it).
+<br>
+<br>
+<br>
+**STEP 2.** Open RStudio and set the working directory to your desktop. Do this by going to Sessions (top menu bar) -> Set working directory -> Choose directory -> Desktop
+<br>
+<br>
+<br>
+**STEP 3.** Read in the data file and assign it to a "P1_data" object. 
+<br>
+Because you've set your working directory to your desktop, and that's where you downloaded the data to, there should be no issues. If you get an error, go back and make sure you did STEP 1 and STEP 2 succesfully.
+```{r}
+P1_data <- read.csv(file="P1_data_EXAMPLE.csv")   # Again, the real data will be "P1_data.csv"
+```
+<br>
+<br>
+<br>
+**STEP 4.** Take a look at the first lines of the data to get oriented. <br> Notice how the species are grouped whether they are adapted to low or high nitrogen. We then have the nitrogen treatments, water treatments, initial data (t0), final data (t26), and biomass data.
+```{r}
+head(P1_data)
+```
+<br>
+<br>
+<br>
+**STEP 5.** Calculate relative growth rate (RGR) for height, root-to-shoot ratio, and add both to the P1_data object. <br> NOTE: you can do the same for the leaf number data, just make a different object than "RGR" (maybe something like "Leaf_RGR")
+```{r}
+RGR <- ((log(P1_data$Height_t26) - log(P1_data$Height_t0))/(26 - 0))
+
+Root_shoot <- (P1_data$Aboveground_biomass/P1_data$Belowground_biomass)
+
+P1_data <- cbind(P1_data, RGR, Root_shoot)
+
+head(P1_data)  # Double check that there is a new RGR column at the end of the file 
+```
+<br>
+<br>
+<br>
+**STEP 6.** Hypothesis 1 relates to how the different N adapted groups respond to nitrogen treatments (*the hypothesis you write for your papers must be more specific than this*). We'll test this with a two-way ANOVA (consult the other tutorial for more details). NOTE: the following example uses Aboveground biomass, but you should explore patterns in all the relavent traits (RGR, Aboveground and Belowground biomass, etc).
+```{r}
+Hyp1 <- lm(Aboveground_biomass ~ N_adapted*N_treatment, data = P1_data)
+
+anova(Hyp1) 
+```
+<br>
+<br>
+To see which groups and treatments are different from one another, run a Tukey's post-hoc test. Comparisons that are different (left-most column) will have significant p-vales (right-most column). 
+```{r}
+TukeyHSD(aov(Aboveground_biomass ~ N_adapted*N_treatment, data = P1_data))
+```
+<br>
+<br>
+Finally, make a boxplot figure to show the results of Hypothesis 1. Feel free to customize the graph with different colors, etc to make any patterns more clear. To save the file, go to the bottom right where the graph appears and export to a PDF or jpeg. Be sure to make the graph wider/larger to show all the treatments on the x-axis.
+```{r}
+boxplot(Aboveground_biomass ~ N_adapted*N_treatment, data = P1_data,     
+      col=(c("red","orange")),   # Red = high N species, Orange = low N species
+      main="CUSTOMIZE YOUR TITLE", xlab="N spp and treatments", ylab="Aboveground biomass (mg)")
+```
+<br>
+<br>
+<br>
+**STEP 7.** Hypothesis 2 relates to how the nitrogen and water treatments interact to influence plant responses (*the hypothesis you write for your papers must be more specific than this*). We're interested in also seeing if being adapted to low versus high N affects how the treatments interact. First we'll separate the data into the high and low N groups.
+```{r}
+HighSpp_P1_data <- P1_data[1:10, 1:13]  # Take the first 10 rows that are only the High N adapted species, and all the 12 columns of treaments and plant trait measurements
+LowSpp_P1_data <- P1_data[11:20, 1:13]  # Ditto for the last 10 rows and Low N adapted species
+```
+<br>
+<br>
+Now, we can test how nitrogen and water treatments interact for the two N adapted species groups. Same drill as before: two-way ANOVA, Tukey's post-hoc, and boxplot figure.
+```{r}
+Hyp2.1 <- lm(Aboveground_biomass ~ N_treatment*H2O_treatment, data = HighSpp_P1_data)
+
+anova(Hyp2.1) 
+```
+<br>
+<br>
+Bring on that Tukey's
+```{r}
+TukeyHSD(aov(Aboveground_biomass ~ N_treatment*H2O_treatment, data = HighSpp_P1_data))
+```
+<br>
+<br>
+And finally, a boxplot with different colors to visualize the water treatments.
+```{r}
+boxplot(Aboveground_biomass ~ N_treatment*H2O_treatment, data = HighSpp_P1_data,     
+      col=(c("lightblue","lightblue", "blue", "blue")),   # lightblue = dry, blue = wet
+      main="CUSTOMIZE YOUR TITLE FOR HIGH N SPP RESPONSE", xlab="N and H2O treatments", ylab="Aboveground biomass (mg)")
+```
+<br>
+<br>
+You should do the exact same process for Low N adapted species by changing which data you use (should be the LowSpp_P1_data).
+<br>
+<br>
+<br>
+**STEP 8.** Add your specific hypotheses, statistics (F values and p-values), and figures to your papers. Remember, you should explore patterns in all the different traits, but that doesnt mean you should include all the stats or every possible figure. It's best to examine all the results and then "find the story" in the data - what are the clearest patterns, what things are surprising, what things are novel, what things are important in the broader context of nitrogen pollution, etc. Although each group has the same dataset to analyze to test the same two hypotheses, we expect that your papers will differ in the specific traits and results you report.
+<br>
+<br>
+In your results, be precise and mention the effect size that different treatments had. 
+<br>
+<br>
+Here's a **bad example**: "High nitrogen spp. responded differently to fertilizer treatments than low nitrogen spp." 
+<br>
+<br>
+Here's a **good example**: "High nitrogen spp. grew 35% taller than low nitrogen spp. in the high fertilizer treatment." 
